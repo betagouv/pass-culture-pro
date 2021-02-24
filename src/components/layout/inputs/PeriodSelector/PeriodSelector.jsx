@@ -35,10 +35,11 @@ const PeriodSelector = ({
                 customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
               />
             )}
+            dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
             maxDate={periodEndingDate}
-            minDate={minDateBeginning}
+            minDate={new Date(minDateBeginning)}
             onChange={changePeriodBeginningDateValue}
             openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
             placeholderText="JJ/MM/AAAA"
@@ -54,6 +55,7 @@ const PeriodSelector = ({
                 customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
               />
             )}
+            dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
             maxDate={maxDateEnding}
