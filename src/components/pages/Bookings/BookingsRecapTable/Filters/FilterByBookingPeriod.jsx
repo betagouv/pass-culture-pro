@@ -1,11 +1,10 @@
-import moment from 'moment/moment'
+import format from 'date-fns/format'
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 
 import { EMPTY_FILTER_VALUE } from './_constants'
-import { formatDateYYYYMMDD } from "../../../../../utils/date"
 
 const FilterByBookingPeriod = ({
   isDisabled,
@@ -16,7 +15,9 @@ const FilterByBookingPeriod = ({
 }) => {
   function handleBookingBeginningDateChange(bookingBeginningDate) {
     const dateToFilter =
-      bookingBeginningDate === null ? EMPTY_FILTER_VALUE : formatDateYYYYMMDD(bookingBeginningDate)
+      bookingBeginningDate === null
+        ? EMPTY_FILTER_VALUE
+        : format(bookingBeginningDate, 'yyyy-MM-dd')
     const updatedFilter = { bookingBeginningDate: dateToFilter }
     const updatedSelectedContent = { selectedBookingBeginningDate: bookingBeginningDate }
     updateFilters(updatedFilter, updatedSelectedContent)
@@ -24,7 +25,7 @@ const FilterByBookingPeriod = ({
 
   function handleBookingEndingDateChange(bookingEndingDate) {
     const dateToFilter =
-      bookingEndingDate === null ? EMPTY_FILTER_VALUE : formatDateYYYYMMDD(bookingEndingDate)
+      bookingEndingDate === null ? EMPTY_FILTER_VALUE : format(bookingEndingDate, 'yyyy-MM-dd')
     const updatedFilter = { bookingEndingDate: dateToFilter }
     const updatedSelectedContent = { selectedBookingEndingDate: bookingEndingDate }
     updateFilters(updatedFilter, updatedSelectedContent)

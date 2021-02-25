@@ -1,3 +1,4 @@
+import format from 'date-fns/format'
 import PropTypes from 'prop-types'
 import React from 'react'
 import DatePicker from 'react-datepicker'
@@ -5,11 +6,10 @@ import DatePicker from 'react-datepicker'
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
 
 import { EMPTY_FILTER_VALUE } from './_constants'
-import { formatDateYYYYMMDD } from "../../../../../utils/date"
 
 const FilterByEventDate = ({ isDisabled, updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerDate) {
-    const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : formatDateYYYYMMDD(offerDate)
+    const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : format(offerDate, 'yyyy-MM-dd')
     const updatedFilter = { offerDate: dateToFilter }
     const updatedSelectedContent = { selectedOfferDate: offerDate }
     updateFilters(updatedFilter, updatedSelectedContent)

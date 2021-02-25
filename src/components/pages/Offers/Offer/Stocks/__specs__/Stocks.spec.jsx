@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import moment from 'moment-timezone'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -9,16 +8,20 @@ import { MemoryRouter, Route } from 'react-router'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { getTodayIsoString } from 'utils/date'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import OfferLayoutContainer from '../../OfferLayoutContainer'
-import Stocks from '../Stocks'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
   loadOffer: jest.fn(),
   loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
+}))
+
+jest.mock('utils/date', () => ({
+  getTodayIsoString: jest.fn().mockImplementation(() => '2020-12-15T12:00:00Z'),
 }))
 
 const renderOffers = async (props, store) => {
@@ -42,13 +45,10 @@ describe('stocks page', () => {
   let props
   let defaultOffer
   let defaultStock
-  let spiedMomentSetDefaultTimezone
   let stockId
   let store
   beforeEach(() => {
     store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
-    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2020-12-15T12:00:00Z')
-    spiedMomentSetDefaultTimezone = jest.spyOn(moment.tz, 'setDefault')
     props = {}
 
     defaultOffer = {
@@ -80,21 +80,9 @@ describe('stocks page', () => {
     pcapi.loadStocks.mockReset()
     pcapi.deleteStock.mockReset()
     pcapi.bulkCreateOrEditStock.mockReset()
-    spiedMomentSetDefaultTimezone.mockRestore()
   })
 
   describe('render', () => {
-    it('should set timezone based on venue timezone', async () => {
-      // Given
-      pcapi.loadOffer.mockResolvedValue(defaultOffer)
-
-      // When
-      await renderOffers(props, store)
-
-      // Then
-      expect(spiedMomentSetDefaultTimezone).toHaveBeenCalledWith('America/Cayenne')
-    })
-
     describe('when no stocks yet', () => {
       it('should not display empty stock list', async () => {
         // given
@@ -226,30 +214,6 @@ describe('stocks page', () => {
 
       // then
       expect(await screen.findByText('Illimité')).toBeInTheDocument()
-    })
-
-    it('should restore default timezone when unmounting', async () => {
-      // Given
-      let unmount
-      await act(async () => {
-        unmount = await render(
-          <MemoryRouter>
-            <Stocks
-              offer={defaultOffer}
-              showErrorNotification={jest.fn()}
-              showSuccessNotification={jest.fn()}
-            />
-          </MemoryRouter>
-        ).unmount
-      })
-
-      // When
-      unmount()
-
-      // Then
-      expect(spiedMomentSetDefaultTimezone).toHaveBeenCalledTimes(2)
-      expect(spiedMomentSetDefaultTimezone).toHaveBeenNthCalledWith(1, 'America/Cayenne')
-      expect(spiedMomentSetDefaultTimezone).toHaveBeenNthCalledWith(2)
     })
 
     it('should have cancel link to go back to offer details', async () => {
@@ -502,9 +466,7 @@ describe('stocks page', () => {
         it('should not be able to edit a stock when expired', async () => {
           // Given
           const dayAfterBeginningDatetime = '2020-12-21T12:00:00Z'
-          jest
-            .spyOn(Date.prototype, 'toISOString')
-            .mockImplementation(() => dayAfterBeginningDatetime)
+          getTodayIsoString.mockImplementationOnce(() => dayAfterBeginningDatetime)
 
           // When
           await renderOffers(props, store)
@@ -604,7 +566,7 @@ describe('stocks page', () => {
 
             // when
             userEvent.click(screen.getByDisplayValue('20/12/2020'))
-            userEvent.click(screen.getByLabelText('day-21'))
+            userEvent.click(screen.getByText('21'))
 
             // then
             expect(screen.queryByDisplayValue('20/12/2020')).not.toBeInTheDocument()
@@ -617,7 +579,7 @@ describe('stocks page', () => {
 
             // when
             userEvent.click(screen.getByDisplayValue('20/12/2020'))
-            userEvent.click(screen.getByLabelText('day-13'))
+            userEvent.click(screen.getByText('13'))
 
             // then
             expect(screen.queryByDisplayValue('13/12/2020')).not.toBeInTheDocument()
@@ -668,7 +630,7 @@ describe('stocks page', () => {
 
             // when
             userEvent.click(screen.getByDisplayValue('18/12/2020'))
-            userEvent.click(screen.getByLabelText('day-17'))
+            userEvent.click(screen.getByText('17'))
 
             // then
             expect(screen.queryByDisplayValue('18/12/2020')).not.toBeInTheDocument()
@@ -681,7 +643,7 @@ describe('stocks page', () => {
 
             // when
             userEvent.click(screen.getByDisplayValue('18/12/2020'))
-            userEvent.click(screen.getByLabelText('day-21'))
+            userEvent.click(screen.getByText('21'))
 
             // then
             expect(screen.queryByDisplayValue('21/12/2020')).not.toBeInTheDocument()
@@ -694,7 +656,7 @@ describe('stocks page', () => {
 
             // when
             userEvent.click(screen.getByDisplayValue('20/12/2020'))
-            userEvent.click(screen.getByLabelText('day-17'))
+            userEvent.click(screen.getByText('17'))
 
             // then
             expect(screen.getByLabelText('Date limite de réservation').value).toBe('17/12/2020')
@@ -794,7 +756,7 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByLabelText('day-26'))
+              userEvent.click(screen.getByText('26'))
 
               userEvent.click(screen.getByLabelText('Heure de l’événement'))
               userEvent.click(screen.getByText('20:00'))
@@ -804,7 +766,7 @@ describe('stocks page', () => {
               userEvent.type(priceField, '14.01')
 
               userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByLabelText('day-25'))
+              userEvent.click(screen.getByText('25'))
 
               const quantityField = screen.getByLabelText('Quantité')
               userEvent.clear(quantityField)
@@ -859,7 +821,7 @@ describe('stocks page', () => {
               expect(pcapi.loadStocks).toHaveBeenCalledTimes(1)
             })
 
-            it('should set booking limit datetime to exact beginning datetime when not specified or same as beginning date', async () => {
+            it('should set booking limit datetime to exact beginning datetime when not specified', async () => {
               // Given
               await renderOffers(props, store)
               userEvent.clear(screen.getByLabelText('Date limite de réservation'))
@@ -878,7 +840,7 @@ describe('stocks page', () => {
               // Given
               await renderOffers(props, store)
               userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByLabelText('day-20'))
+              userEvent.click(screen.getByText('20'))
 
               // When
               await act(async () => {
@@ -894,7 +856,7 @@ describe('stocks page', () => {
               // Given
               await renderOffers(props, store)
               userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByLabelText('day-19'))
+              userEvent.click(screen.getByText('19'))
 
               // When
               await act(async () => {
@@ -912,7 +874,7 @@ describe('stocks page', () => {
 
               await renderOffers(props, store)
               userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByLabelText('day-17'))
+              userEvent.click(screen.getByText('17'))
 
               // When
               await act(async () => {
@@ -965,7 +927,7 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByLabelText('day-26'))
+              userEvent.click(screen.getByText('26'))
 
               userEvent.click(screen.getByLabelText('Heure de l’événement'))
               userEvent.click(screen.getByText('20:00'))
@@ -1043,7 +1005,7 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByLabelText('day-26'))
+              userEvent.click(screen.getByText('26'))
 
               userEvent.click(screen.getByLabelText('Heure de l’événement'))
               userEvent.click(screen.getByText('20:00'))
@@ -1067,7 +1029,7 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByLabelText('day-26'))
+              userEvent.click(screen.getByText('26'))
 
               userEvent.click(screen.getByLabelText('Heure de l’événement'))
               userEvent.click(screen.getByText('20:00'))
@@ -1312,7 +1274,7 @@ describe('stocks page', () => {
 
           // when
           userEvent.click(screen.getByDisplayValue('18/12/2020'))
-          userEvent.click(screen.getByLabelText('day-17'))
+          userEvent.click(screen.getByText('17'))
 
           // then
           expect(screen.queryByDisplayValue('18/12/2020')).not.toBeInTheDocument()
@@ -1390,7 +1352,7 @@ describe('stocks page', () => {
             userEvent.type(priceField, '14.01')
 
             userEvent.click(screen.getByLabelText('Date limite de réservation'))
-            userEvent.click(screen.getByLabelText('day-25'))
+            userEvent.click(screen.getByText('25'))
 
             const quantityField = screen.getByLabelText('Quantité')
             userEvent.clear(quantityField)
@@ -1444,7 +1406,7 @@ describe('stocks page', () => {
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
             userEvent.click(screen.getByLabelText('Date limite de réservation'))
-            userEvent.click(screen.getByLabelText('day-19'))
+            userEvent.click(screen.getByText('19'))
 
             // When
             userEvent.click(screen.getByText('Enregistrer'))
@@ -1461,7 +1423,7 @@ describe('stocks page', () => {
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
             userEvent.click(screen.getByLabelText('Date limite de réservation'))
-            userEvent.click(screen.getByLabelText('day-17'))
+            userEvent.click(screen.getByText('17'))
 
             // When
             userEvent.click(screen.getByText('Enregistrer'))
@@ -1736,7 +1698,7 @@ describe('stocks page', () => {
         fireEvent.click(screen.getByText('Ajouter une date'))
 
         fireEvent.click(screen.getAllByLabelText('Date de l’événement')[0])
-        fireEvent.click(screen.getByLabelText('day-24'))
+        fireEvent.click(screen.getByText('24'))
 
         fireEvent.click(screen.getAllByLabelText('Heure de l’événement')[0])
         fireEvent.click(screen.getByText('20:00'))
@@ -1744,20 +1706,20 @@ describe('stocks page', () => {
         fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
 
         fireEvent.click(screen.getAllByLabelText('Date limite de réservation')[0])
-        fireEvent.click(screen.getByLabelText('day-22'))
+        fireEvent.click(screen.getByText('22'))
 
         fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '15' } })
 
         fireEvent.click(screen.getByText('Ajouter une date'))
 
         fireEvent.click(screen.getAllByLabelText('Date de l’événement')[0])
-        fireEvent.click(screen.getByLabelText('day-25'))
+        fireEvent.click(screen.getByText('25'))
 
         fireEvent.click(screen.getAllByLabelText('Heure de l’événement')[0])
         fireEvent.click(screen.getByText('20:00'))
 
         fireEvent.click(screen.getAllByLabelText('Date limite de réservation')[0])
-        fireEvent.click(screen.getByLabelText('day-23'))
+        fireEvent.click(screen.getByText('23'))
 
         // when
         await act(async () => {
@@ -1818,7 +1780,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter une date'))
 
         userEvent.click(screen.getByLabelText('Date de l’événement'))
-        userEvent.click(screen.getByLabelText('day-26'))
+        userEvent.click(screen.getByText('26'))
 
         userEvent.click(screen.getByLabelText('Heure de l’événement'))
         userEvent.click(screen.getByText('20:00'))
@@ -1839,7 +1801,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter une date'))
 
         userEvent.click(screen.getByLabelText('Date de l’événement'))
-        userEvent.click(screen.getByLabelText('day-26'))
+        userEvent.click(screen.getByText('26'))
 
         userEvent.click(screen.getByLabelText('Heure de l’événement'))
         userEvent.click(screen.getByText('20:00'))
@@ -1865,7 +1827,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter une date'))
 
         userEvent.click(screen.getByLabelText('Date de l’événement'))
-        userEvent.click(screen.getByLabelText('day-26'))
+        userEvent.click(screen.getByText('26'))
 
         userEvent.click(screen.getByLabelText('Heure de l’événement'))
         userEvent.click(screen.getByText('20:00'))
@@ -1991,7 +1953,7 @@ describe('stocks page', () => {
         userEvent.type(screen.getByLabelText('Prix'), '15')
 
         userEvent.click(screen.getByLabelText('Date limite de réservation'))
-        userEvent.click(screen.getByLabelText('day-22'))
+        userEvent.click(screen.getByText('22'))
 
         userEvent.type(screen.getByLabelText('Quantité'), '15')
 

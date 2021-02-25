@@ -1,5 +1,4 @@
 import debounce from 'lodash.debounce'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
