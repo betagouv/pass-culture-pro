@@ -1,4 +1,5 @@
-import state from '../../../utils/mocks/state'
+import state from 'components/utils/mocks/state'
+
 import { mapStateToProps, mapDispatchToProps, createApiPath } from '../OfferersContainer'
 
 describe('src | components | pages | Offerers | OfferersContainer', () => {
@@ -12,7 +13,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
       // then
       const expected = {
-        currentUser: state.data.users[0],
+        currentUser: state.users.currentUser,
         isOffererCreationAvailable: false,
         notification: null,
         offerers: [
@@ -64,6 +65,11 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         // given
         const props = {}
         const state = {
+          users: {
+            currentUser: {
+              id: 'fake_user_id',
+            },
+          },
           data: {
             features: [
               {
@@ -85,6 +91,11 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         // given
         const props = {}
         const state = {
+          users: {
+            currentUser: {
+              id: 'fake_user_id',
+            },
+          },
           data: {
             features: [
               {

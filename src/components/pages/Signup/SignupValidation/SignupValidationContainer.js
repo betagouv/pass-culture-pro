@@ -3,13 +3,12 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import SignupValidation from './SignupValidation'
 
 export function mapStateToProps(state) {
   return {
-    currentUser: selectCurrentUser(state),
+    currentUser: state.users.currentUser,
     isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
   }
 }

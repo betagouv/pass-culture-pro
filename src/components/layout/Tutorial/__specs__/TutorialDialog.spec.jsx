@@ -51,12 +51,12 @@ describe('tutorial modal', () => {
             nameKey: 'PRO_TUTO',
           },
         ],
-        users: [
-          {
-            id: 'test_id',
-            hasSeenProTutorials: false,
-          },
-        ],
+      },
+      users: {
+        currentUser: {
+          id: 'test_id',
+          hasSeenProTutorials: false,
+        },
       },
     })
 
@@ -78,12 +78,12 @@ describe('tutorial modal', () => {
             nameKey: 'PRO_TUTO',
           },
         ],
-        users: [
-          {
-            id: 'test_id',
-            hasSeenProTutorials: true,
-          },
-        ],
+      },
+      users: {
+        currentUser: {
+          id: 'test_id',
+          hasSeenProTutorials: true,
+        },
       },
     })
     const props = {}
@@ -107,12 +107,12 @@ describe('tutorial modal', () => {
               nameKey: 'PRO_TUTO',
             },
           ],
-          users: [
-            {
-              id: 'test_id',
-              hasSeenProTutorials: false,
-            },
-          ],
+        },
+        users: {
+          currentUser: {
+            id: 'test_id',
+            hasSeenProTutorials: false,
+          },
         },
       })
 
