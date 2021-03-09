@@ -9,6 +9,7 @@ import { EMPTY_FILTER_VALUE } from './_constants'
 
 const FilterByEventDate = ({ isDisabled, updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerDate) {
+    console.log(offerDate)
     const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : format(offerDate, 'yyyy-MM-dd')
     const updatedFilter = { offerDate: dateToFilter }
     const updatedSelectedContent = { selectedOfferDate: offerDate }
