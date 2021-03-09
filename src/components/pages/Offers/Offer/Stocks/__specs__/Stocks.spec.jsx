@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
-import { getTodayIsoString } from 'utils/date'
+import { getToday } from 'utils/date'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import OfferLayoutContainer from '../../OfferLayoutContainer'
@@ -21,7 +21,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 jest.mock('utils/date', () => ({
-  getTodayIsoString: jest.fn().mockImplementation(() => '2020-12-15T12:00:00Z'),
+  getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderOffers = async (props, store) => {
@@ -466,7 +466,7 @@ describe('stocks page', () => {
         it('should not be able to edit a stock when expired', async () => {
           // Given
           const dayAfterBeginningDatetime = '2020-12-21T12:00:00Z'
-          getTodayIsoString.mockImplementationOnce(() => dayAfterBeginningDatetime)
+          getToday.mockImplementationOnce(() => dayAfterBeginningDatetime)
 
           // When
           await renderOffers(props, store)

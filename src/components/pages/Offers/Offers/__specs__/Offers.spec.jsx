@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-disabled-tests */
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { mount } from 'enzyme'
@@ -10,6 +9,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
+import { getToday } from 'utils/date'
 
 import {
   ALL_OFFERERS,
@@ -92,6 +92,10 @@ jest.mock('store/selectors/data/venuesSelectors', () => ({
   }),
 }))
 
+jest.mock('utils/date', () => ({
+  getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
 describe('src | components | pages | Offers | Offers', () => {
   let change
   let parse
@@ -114,7 +118,6 @@ describe('src | components | pages | Offers | Offers', () => {
   ]
 
   beforeEach(() => {
-    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2020-12-15T12:00:00Z')
     change = jest.fn()
     parse = jest.fn().mockReturnValue({})
     currentUser = { id: 'EY', isAdmin: false, name: 'Current User', publicName: 'USER' }
@@ -913,7 +916,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       fireEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
-      fireEvent.click(screen.getByLabelText('day-25'))
+      fireEvent.click(screen.getByText('25'))
 
       // when
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -937,7 +940,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       fireEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
-      fireEvent.click(screen.getByLabelText('day-27'))
+      fireEvent.click(screen.getByText('27'))
 
       // when
       fireEvent.click(screen.getByText('Lancer la recherche'))

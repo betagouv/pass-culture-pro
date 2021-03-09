@@ -1,4 +1,3 @@
-import moment from 'moment/moment'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
@@ -30,6 +29,8 @@ import {
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 import StatusFiltersButton from './StatusFiltersButton'
+import endOfDay from "date-fns/endOfDay"
+import { getToday } from "../../../../utils/date"
 
 class Offers extends PureComponent {
   constructor(props) {
@@ -299,14 +300,14 @@ class Offers extends PureComponent {
 
   changePeriodBeginningDateValue = periodBeginningDate => {
     const dateToFilter = periodBeginningDate
-      ? periodBeginningDate.format()
+      ? periodBeginningDate.toISOString()
       : DEFAULT_SEARCH_FILTERS.periodBeginningDate
     this.setSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
   changePeriodEndingDateValue = periodEndingDate => {
     const dateToFilter = periodEndingDate
-      ? periodEndingDate.endOf('day').format()
+      ? endOfDay(periodEndingDate).toISOString()
       : DEFAULT_SEARCH_FILTERS.periodEndingDate
     this.setSearchFilters({ periodEndingDate: dateToFilter })
   }
@@ -317,13 +318,6 @@ class Offers extends PureComponent {
 
   renderSearchFilters = () => {
     const { searchFilters, typeOptions, venueOptions, offerer } = this.state
-    const formattedTodayDate = moment(new Date().toISOString())
-    const formattedPeriodBeginningDate = searchFilters.periodBeginningDate
-      ? moment(searchFilters.periodBeginningDate)
-      : undefined
-    const formattedPeriodEndingDate = searchFilters.periodEndingDate
-      ? moment(searchFilters.periodEndingDate)
-      : undefined
 
     return (
       <Fragment>
@@ -379,11 +373,11 @@ class Offers extends PureComponent {
               changePeriodEndingDateValue={this.changePeriodEndingDateValue}
               isDisabled={false}
               label="Période de l’évènement"
-              maxDateBeginning={formattedPeriodEndingDate}
-              minDateEnding={formattedPeriodBeginningDate}
-              periodBeginningDate={formattedPeriodBeginningDate}
-              periodEndingDate={formattedPeriodEndingDate}
-              todayDate={formattedTodayDate}
+              maxDateBeginning={searchFilters.periodEndingDate}
+              minDateEnding={searchFilters.periodBeginningDate}
+              periodBeginningDate={searchFilters.periodBeginningDate}
+              periodEndingDate={searchFilters.periodEndingDate}
+              todayDate={getToday()}
             />
           </div>
           <div className="search-separator">

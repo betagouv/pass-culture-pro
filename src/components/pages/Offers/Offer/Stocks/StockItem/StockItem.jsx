@@ -6,7 +6,7 @@ import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
-import { getTodayIsoString } from 'utils/date'
+import { getToday } from 'utils/date'
 
 import { ReactComponent as DeleteStockIcon } from './assets/delete-stock.svg'
 import { hasStockBeenUpdated } from './domain'
@@ -22,7 +22,7 @@ const StockItem = ({
   removeStockInCreation,
   initialStock,
 }) => {
-  const today = getTodayIsoString()
+  const today = getToday().toISOString()
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDate, setBeginningDate] = useState(initialStock.beginningDatetime)

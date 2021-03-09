@@ -38,12 +38,12 @@ const PeriodSelector = ({
             dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={periodEndingDate}
-            minDate={new Date(minDateBeginning)}
+            maxDate={periodEndingDate ? new Date(periodEndingDate) : undefined}
+            minDate={minDateBeginning ? new Date(minDateBeginning) : undefined}
             onChange={changePeriodBeginningDateValue}
             openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
             placeholderText="JJ/MM/AAAA"
-            selected={periodBeginningDate}
+            selected={periodBeginningDate ? new Date(periodBeginningDate) : undefined}
           />
         </div>
         <span className="vertical-bar" />
@@ -58,12 +58,12 @@ const PeriodSelector = ({
             dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={maxDateEnding}
-            minDate={periodBeginningDate}
+            maxDate={maxDateEnding ? new Date(maxDateEnding) : undefined}
+            minDate={periodBeginningDate ? new Date(periodBeginningDate) : undefined}
             onChange={changePeriodEndingDateValue}
             openToDate={periodEndingDate ? periodEndingDate : todayDate}
             placeholderText="JJ/MM/AAAA"
-            selected={periodEndingDate}
+            selected={periodEndingDate ? new Date(periodEndingDate) : undefined}
           />
         </div>
       </div>
