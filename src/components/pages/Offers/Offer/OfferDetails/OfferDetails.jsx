@@ -11,6 +11,7 @@ import OfferEditionContainer from './OfferForm/OfferEditionContainer'
 import OfferPreview from './OfferPreview/OfferPreview'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 
+
 const OfferDetails = ({
   history,
   isUserAdmin,
