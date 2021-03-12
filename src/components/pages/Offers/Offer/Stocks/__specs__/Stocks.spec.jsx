@@ -465,7 +465,7 @@ describe('stocks page', () => {
       describe('when offer has been manually created', () => {
         it('should not be able to edit a stock when expired', async () => {
           // Given
-          const dayAfterBeginningDatetime = '2020-12-21T12:00:00Z'
+          const dayAfterBeginningDatetime = new Date('2020-12-21T12:00:00Z')
           getToday.mockImplementationOnce(() => dayAfterBeginningDatetime)
 
           // When
