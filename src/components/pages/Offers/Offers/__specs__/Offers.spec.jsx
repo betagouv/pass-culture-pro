@@ -9,7 +9,6 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
-import { getToday } from 'utils/date'
 
 import {
   ALL_OFFERERS,
@@ -930,7 +929,7 @@ describe('src | components | pages | Offers | Offers', () => {
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-        periodBeginningDate: '2020-12-25T00:00:00+00:00',
+        periodBeginningDate: '2020-12-25T00:00:00Z',
         periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
@@ -955,7 +954,7 @@ describe('src | components | pages | Offers | Offers', () => {
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate: '2020-12-27T23:59:59+00:00',
+        periodEndingDate: '2020-12-27T23:59:59Z',
       })
     })
   })

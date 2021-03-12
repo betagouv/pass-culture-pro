@@ -1,3 +1,5 @@
+import { format, utcToZonedTime } from 'date-fns-tz'
+import endOfDay from 'date-fns/endOfDay'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
@@ -15,6 +17,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
+import { getToday } from '../../../../utils/date'
 import PeriodSelector from '../../../layout/inputs/PeriodSelector/PeriodSelector'
 
 import {
@@ -29,8 +32,6 @@ import {
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 import StatusFiltersButton from './StatusFiltersButton'
-import endOfDay from "date-fns/endOfDay"
-import { getToday } from "../../../../utils/date"
 
 class Offers extends PureComponent {
   constructor(props) {
@@ -300,14 +301,14 @@ class Offers extends PureComponent {
 
   changePeriodBeginningDateValue = periodBeginningDate => {
     const dateToFilter = periodBeginningDate
-      ? periodBeginningDate.toISOString()
+      ? format(periodBeginningDate, "yyyy-MM-dd'T'HH:mm:ssX", { timeZone: 'UTC' })
       : DEFAULT_SEARCH_FILTERS.periodBeginningDate
     this.setSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
   changePeriodEndingDateValue = periodEndingDate => {
     const dateToFilter = periodEndingDate
-      ? endOfDay(periodEndingDate).toISOString()
+      ? format(endOfDay(periodEndingDate), "yyyy-MM-dd'T'HH:mm:ssX", { timeZone: 'UTC' })
       : DEFAULT_SEARCH_FILTERS.periodEndingDate
     this.setSearchFilters({ periodEndingDate: dateToFilter })
   }
@@ -373,10 +374,26 @@ class Offers extends PureComponent {
               changePeriodEndingDateValue={this.changePeriodEndingDateValue}
               isDisabled={false}
               label="Période de l’évènement"
-              maxDateBeginning={searchFilters.periodEndingDate}
-              minDateEnding={searchFilters.periodBeginningDate}
-              periodBeginningDate={searchFilters.periodBeginningDate}
-              periodEndingDate={searchFilters.periodEndingDate}
+              maxDateBeginning={
+                searchFilters.periodEndingDate
+                  ? utcToZonedTime(searchFilters.periodEndingDate, 'UTC')
+                  : undefined
+              }
+              minDateEnding={
+                searchFilters.periodBeginningDate
+                  ? utcToZonedTime(searchFilters.periodBeginningDate, 'UTC')
+                  : undefined
+              }
+              periodBeginningDate={
+                searchFilters.periodBeginningDate
+                  ? utcToZonedTime(searchFilters.periodBeginningDate, 'UTC')
+                  : undefined
+              }
+              periodEndingDate={
+                searchFilters.periodEndingDate
+                  ? utcToZonedTime(searchFilters.periodEndingDate, 'UTC')
+                  : undefined
+              }
               todayDate={getToday()}
             />
           </div>
